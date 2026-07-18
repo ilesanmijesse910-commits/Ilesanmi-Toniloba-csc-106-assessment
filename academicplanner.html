@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Planner</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #003366;
+        }
+
+        input {
+            width: 70%;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            margin-left: 5px;
+        }
+
+        .add-btn {
+            background: green;
+            color: white;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        li {
+            background: #eee;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 5px;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            color: gray;
+        }
+
+        .complete-btn {
+            background: blue;
+            color: white;
+            margin-right: 5px;
+        }
+
+        .delete-btn {
+            background: red;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Academic Planner</h1>
+
+    <input type="text" id="taskInput" placeholder="Enter a task...">
+    <button class="add-btn" onclick="addTask()">Add Task</button>
+
+    <ul id="taskList"></ul>
+
+</div>
+
+<script>
+
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+displayTasks();
+
+document.getElementById("taskInput").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+        addTask();
+    }
+});
+
+function addTask() {
+    let input = document.getElementById("taskInput");
+
+    if (input.value.trim() === "") {
+        alert("Please enter a task.");
+        return;
+    }
+
+    tasks.push({
+        text: input.value.trim(),
+        completed: false
+    });
+
+    input.value = "";
+    saveTasks();
+}
+
+function displayTasks() {
+    let list = document.getElementById("taskList");
+    list.innerHTML = "";
+
+    tasks.forEach((task, index) => {
+        let li = document.createElement("li");
+
+        if (task.completed) {
+            li.classList.add("completed");
+        }
+
+        li.innerHTML = `
+            <span>${task.text}</span>
+            <div>
+                <button class="complete-btn" onclick="completeTask(${index})">✔</button>
+                <button class="delete-btn" onclick="deleteTask(${index})">Delete</button>
+            </div>
+        `;
+
+        list.appendChild(li);
+    });
+}
+
+function completeTask(index) {
+    tasks[index].completed = !tasks[index].completed;
+    saveTasks();
+}
+
+function deleteTask(index) {
+    tasks.splice(index, 1);
+    saveTasks();
+}
+
+function saveTasks() {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+    displayTasks();
+}
+
+</script>
+
+</body>
+</html>
